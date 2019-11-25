@@ -1,0 +1,131 @@
+#include <SoftwareSerial.h> //블루투스 라이브러리
+
+int in1 =7;
+int in2 =8;
+int in3 =9;
+int in4 =10;
+//첫번째 모터 드라이버 
+
+int in5 =7;
+int in6 =8;
+int in7 =9;
+int in8 =10;
+//두번째 모터 드라이버 
+
+// 태그의 ID를 저장할 곳 (RFID)
+	char tagString[15];  
+	int index = 0;
+	
+#define BT_RXD 8
+#define BT_TXD 7  //케이블 연결	
+SoftwareSerial bluetooth(BT_RXD, BT_TXD);
+	
+void setup() {
+	Serial.begin(9600);
+	Serial.println("RFID example start!");
+	Serial.println('\n');
+	//RFID
+	
+	bluetooth.begin(9600);
+	//블루투스
+	
+	pinMode(in1,OUTPUT);
+	pinMode(in2,OUTPUT);
+	pinMode(in3,OUTPUT);
+	pinMode(in4,OUTPUT);
+	//첫번째 모터 드라이버
+	
+	pinMode(in5,OUTPUT);
+	pinMode(in6,OUTPUT);
+	pinMode(in7,OUTPUT);
+	pinMode(in8,OUTPUT);
+	//두번째 모터 드라이버
+}
+
+void loop(){
+  // RFID 코드 
+  // 시리얼 포트에 읽을 데이터가 있으면
+	while(Serial.available()) {  
+	// 시리얼 포트에 있는 데이터를 저장합니다.
+	int readByte = Serial.read(); 
+	
+	//시리얼 통신 
+	Serial.println("Serial.read() is ");
+	Serial.print("DEC : ");
+	Serial.println(readByte, DEC);
+	Serial.print("HEX : ");
+	Serial.println(readByte, HEX);
+	Serial.println("RFID reading.... store string");
+	
+	// RFID 태그의 ID를 저장합니다.
+	tagString[index] = readByte;  
+	index++;
+	Serial.println("tagString is : ");
+	// RFID 태그의 ID를 출력합니다.
+	Serial.println(tagString); 
+	}
+  
+  //블루투스 인식 및 시리얼 띄우기 
+  if (bluetooth.available()) {
+    Serial.write(bluetooth.read());
+  }
+  if (Serial.available()) {
+    bluetooth.write(Serial.read());
+  }
+  
+  if(Serial.available()) {
+    char in_data;
+    in_data=Serial.read();
+    
+    if(in_data == '1') {    //앞으로 회전
+      digitalWrite(in1,HIGH);
+      digitalWrite(in2,LOW);
+      digitalWrite(in3,HIGH);
+      digitalWrite(in4,LOW);
+      
+      digitalWrite(in5,HIGH);
+      digitalWrite(in6,LOW);
+      digitalWrite(in7,HIGH);
+      digitalWrite(in8,LOW);
+    }
+    else if(in_data=='2'){  // 뒤로 회전
+      digitalWrite(in1,LOW);
+      digitalWrite(in2,HIGH);
+      digitalWrite(in3,LOW);
+      digitalWrite(in4,HIGH);
+      
+      digitalWrite(in5,LOW);
+      digitalWrite(in6,HIGH);
+      digitalWrite(in7,LOW);
+      digitalWrite(in8,HIGH);
+    }
+    else if(in_data=='3'){  //좌 회전
+      digitalWrite(in1,LOW);
+      digitalWrite(in2,HIGH);
+      digitalWrite(in3,HIGH);
+      digitalWrite(in4,LOW);   
+    }
+    else if(in_data=='4'){  //우 회전
+      digitalWrite(in1,HIGH);
+      digitalWrite(in2,LOW);
+      digitalWrite(in3,LOW);
+      digitalWrite(in4,HIGH);
+      
+      digitalWrite(in5,HIGH);
+      digitalWrite(in6,LOW);
+      digitalWrite(in7,LOW);
+      digitalWrite(in8,HIGH);
+    }
+    else{   //회전정지
+      digitalWrite(in1,LOW);
+      digitalWrite(in2,LOW);
+      digitalWrite(in3,LOW);
+      digitalWrite(in4,LOW);
+      
+      digitalWrite(in5,LOW);
+      digitalWrite(in6,LOW);
+      digitalWrite(in7,LOW);
+      digitalWrite(in8,LOW);
+    }   
+  }    
+}
